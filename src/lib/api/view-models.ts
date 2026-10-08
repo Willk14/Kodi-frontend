@@ -1,0 +1,13 @@
+import type { Allocation, Credit, Invoice, LedgerEntry, Payment, Property, Tenant, UnassignedPayment, Unit } from "./types";
+
+export const mapProperty = (d: Property) => ({ id: d.id, name: d.name, location: [d.town_location, d.county].filter(Boolean).join(", "), totalUnits: d.total_units, createdAt: d.created_at });
+export const mapUnit = (d: Unit) => ({ id: d.id, propertyId: d.property_id, unitNumber: d.unit_number, baseRent: d.base_rent, garbageFee: d.garbage_fee, securityFee: d.security_fee, waterRatePerUnit: d.water_rate_per_unit, occupied: d.is_occupied, createdAt: d.created_at });
+export const mapTenant = (d: Tenant) => ({ id: d.id, unitId: d.unit_id, fullName: d.full_name, primaryPhone: d.primary_phone, leaseStartDate: d.lease_start_date, depositAmount: d.deposit_amount, active: d.is_active, createdAt: d.created_at });
+export const mapInvoice = (d: Invoice) => ({ id: d.id, invoiceNumber: d.invoice_number, billingMonth: d.billing_month, tenantId: d.tenant_id, unitId: d.unit_id, rentAmount: d.rent_amount, waterAmount: d.water_amount, garbageAmount: d.garbage_amount, securityAmount: d.security_amount, totalAmount: d.total_amount, dueDate: d.due_date, paid: d.is_paid, createdAt: d.created_at });
+export const mapPayment = (d: Payment) => ({ id: d.id, tenantId: d.tenant_id, receipt: d.mpesa_receipt_number, amount: d.amount, method: d.payment_method, status: d.status, createdAt: d.created_at, completedAt: d.completed_at });
+export const mapAllocation = (d: Allocation) => ({ id: d.id, invoiceId: d.invoice_id, amount: d.amount, status: d.status, createdAt: d.created_at, reversedAt: d.reversed_at });
+export const mapCredit = (d: Credit) => ({ id: d.id, amount: d.amount, availableAmount: d.available_amount, status: d.status, createdAt: d.created_at, appliedAt: d.applied_at });
+export const mapUnassignedPayment = (d: UnassignedPayment) => ({ id: d.id, receipt: d.mpesa_receipt_number, amount: d.amount, payerPhone: d.payer_phone, payerName: d.payer_name, invalidReference: d.invalid_account_reference, createdAt: d.created_at });
+export const mapLedgerEntry = (d: LedgerEntry) => ({ id: d.id, receipt: d.mpesa_receipt_number, entryType: d.entry_type, amount: d.amount, paymentMethod: d.payment_method, status: d.status, description: d.description, createdAt: d.created_at, unitId: d.unit_id, tenantId: d.tenant_id, invoiceId: d.invoice_id, paymentId: d.payment_transaction_id });
+
+export type ViewModel = ReturnType<typeof mapProperty> | ReturnType<typeof mapUnit> | ReturnType<typeof mapTenant> | ReturnType<typeof mapInvoice> | ReturnType<typeof mapPayment> | ReturnType<typeof mapAllocation> | ReturnType<typeof mapCredit> | ReturnType<typeof mapUnassignedPayment> | ReturnType<typeof mapLedgerEntry>;

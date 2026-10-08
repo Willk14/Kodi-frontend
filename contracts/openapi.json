@@ -1,0 +1,3035 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "KodiFlow API",
+    "description": "Multi-tenant M-Pesa Rent Reconciliation & Property Management Engine",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/webhooks/mpesa": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Receive Mpesa Webhook",
+        "description": "Receive an M-Pesa STK callback.\n\nThe endpoint is responsible only for HTTP transport\nand dependency injection.",
+        "operationId": "receive_mpesa_webhook_api_v1_webhooks_mpesa_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MpesaStkPushCallbackPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments": {
+      "get": {
+        "tags": [
+          "Payments",
+          "Payments"
+        ],
+        "summary": "List payment transactions in the authenticated scope",
+        "operationId": "list_payment_transactions_api_v1_payments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentTransactionRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Payment Transactions Api V1 Payments Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Payment read access or membership scope is required."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/payments/{payment_id}": {
+      "get": {
+        "tags": [
+          "Payments",
+          "Payments"
+        ],
+        "summary": "Get a payment transaction in the authenticated scope",
+        "operationId": "get_payment_transaction_api_v1_payments__payment_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Payment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentTransactionRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Payment read access or membership scope is required."
+          },
+          "404": {
+            "description": "Payment transaction not found in this scope."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{payment_id}/allocations": {
+      "get": {
+        "tags": [
+          "Payments",
+          "Payments"
+        ],
+        "summary": "List invoice allocations for a payment in the authenticated scope",
+        "operationId": "list_payment_allocations_api_v1_payments__payment_id__allocations_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Payment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentAllocationRead"
+                  },
+                  "title": "Response List Payment Allocations Api V1 Payments  Payment Id  Allocations Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Payment read access or membership scope is required."
+          },
+          "404": {
+            "description": "Payment transaction not found in this scope."
+          },
+          "500": {
+            "description": "The payment-allocation query failed."
+          },
+          "503": {
+            "description": "Authentication or database context is unavailable."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{payment_id}/credits": {
+      "get": {
+        "tags": [
+          "Payments",
+          "Payments"
+        ],
+        "summary": "List payment credits for a payment in the authenticated scope",
+        "operationId": "list_payment_credits_api_v1_payments__payment_id__credits_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Payment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentCreditRead"
+                  },
+                  "title": "Response List Payment Credits Api V1 Payments  Payment Id  Credits Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Payment read access or membership scope is required."
+          },
+          "404": {
+            "description": "Payment transaction not found in this scope."
+          },
+          "500": {
+            "description": "The payment-credit query failed."
+          },
+          "503": {
+            "description": "Authentication or database context is unavailable."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/stk-push": {
+      "post": {
+        "tags": [
+          "Payments",
+          "Payments"
+        ],
+        "summary": "Initiate M-Pesa STK Push",
+        "description": "Initiate an M-Pesa STK Push.\n\nThis endpoint only starts the M-Pesa payment request.\n\nIt does not create a ledger entry.\nLedger processing happens after the M-Pesa callback\nis received and successfully reconciled.",
+        "operationId": "initiate_stk_push_api_v1_payments_stk_push_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StkPushRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StkPushResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/stk-push/unresolved": {
+      "get": {
+        "tags": [
+          "Payments",
+          "Payments"
+        ],
+        "summary": "List STK requests awaiting callback reconciliation",
+        "operationId": "list_unresolved_stk_requests_api_v1_payments_stk_push_unresolved_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StkRequestQueuePage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Platform administrator access is required."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/stk-push/{checkout_request_id}/query": {
+      "post": {
+        "tags": [
+          "Payments",
+          "Payments"
+        ],
+        "summary": "Query an unresolved STK Push status",
+        "operationId": "query_stk_push_status_api_v1_payments_stk_push__checkout_request_id__query_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "checkout_request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Checkout Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Query Stk Push Status Api V1 Payments Stk Push  Checkout Request Id  Query Post"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Platform administrator access is required."
+          },
+          "404": {
+            "description": "STK request not found."
+          },
+          "409": {
+            "description": "A callback has already been received."
+          },
+          "502": {
+            "description": "Daraja status query failed."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/properties": {
+      "get": {
+        "tags": [
+          "Properties"
+        ],
+        "summary": "List landlord properties",
+        "operationId": "list_properties_api_v1_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PropertyRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Properties Api V1 Properties Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or token is invalid."
+          },
+          "403": {
+            "description": "Landlord role or property-read permission is required."
+          },
+          "500": {
+            "description": "Unexpected database or server failure."
+          },
+          "503": {
+            "description": "Authentication dependencies are unavailable."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/properties/{property_id}": {
+      "get": {
+        "tags": [
+          "Properties"
+        ],
+        "summary": "Get a landlord property",
+        "operationId": "get_property_api_v1_properties__property_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "property_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Property Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or token is invalid."
+          },
+          "403": {
+            "description": "Landlord role or property-read permission is required."
+          },
+          "500": {
+            "description": "Unexpected database or server failure."
+          },
+          "503": {
+            "description": "Authentication dependencies are unavailable."
+          },
+          "404": {
+            "description": "Property not found in this landlord scope."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/properties/{property_id}/units": {
+      "get": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "List units in a property",
+        "operationId": "list_property_units_api_v1_properties__property_id__units_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "property_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Property Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnitRead"
+                  },
+                  "title": "Response List Property Units Api V1 Properties  Property Id  Units Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Unit read access is required."
+          },
+          "404": {
+            "description": "Property not found in this landlord scope."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Create a unit in a property",
+        "operationId": "create_property_unit_api_v1_properties__property_id__units_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "property_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Property Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnitCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnitRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord unit write access is required."
+          },
+          "404": {
+            "description": "Property not found in this landlord scope."
+          },
+          "409": {
+            "description": "Unit number already exists in this property."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/units/{unit_id}": {
+      "get": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Get a unit",
+        "operationId": "get_unit_api_v1_units__unit_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "unit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Unit Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnitRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Unit read access is required."
+          },
+          "404": {
+            "description": "Unit not found in this landlord scope."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Update a unit",
+        "operationId": "update_unit_api_v1_units__unit_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "unit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Unit Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnitUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnitRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord unit write access is required."
+          },
+          "404": {
+            "description": "Unit not found in this landlord scope."
+          },
+          "409": {
+            "description": "Unit number already exists in the property."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tenants": {
+      "get": {
+        "tags": [
+          "Tenants"
+        ],
+        "summary": "List tenants in the current landlord scope",
+        "operationId": "list_tenants_api_v1_tenants_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TenantRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Tenants Api V1 Tenants Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Tenant read access is required."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Tenants"
+        ],
+        "summary": "Create a tenant in the current landlord scope",
+        "operationId": "create_tenant_api_v1_tenants_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord tenant write access is required."
+          },
+          "404": {
+            "description": "Unit not found in this landlord scope."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tenants/me": {
+      "get": {
+        "tags": [
+          "Tenants"
+        ],
+        "summary": "Get the authenticated tenant record",
+        "operationId": "get_my_tenant_api_v1_tenants_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Tenant self-read access is required."
+          },
+          "404": {
+            "description": "Tenant record not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenant_id}": {
+      "get": {
+        "tags": [
+          "Tenants"
+        ],
+        "summary": "Get a tenant in the current landlord scope",
+        "operationId": "get_tenant_api_v1_tenants__tenant_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "tenant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Tenant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Tenant read access is required."
+          },
+          "404": {
+            "description": "Tenant not found in this landlord scope."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices": {
+      "get": {
+        "tags": [
+          "Invoices"
+        ],
+        "summary": "List invoices in the current landlord scope",
+        "operationId": "list_invoices_api_v1_invoices_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InvoiceRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Invoices Api V1 Invoices Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord invoice read access is required."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Invoices"
+        ],
+        "summary": "Create an invoice for a tenant in the current landlord scope",
+        "operationId": "create_invoice_api_v1_invoices_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord invoice write access is required."
+          },
+          "404": {
+            "description": "Unit or tenant is not in this landlord scope."
+          },
+          "409": {
+            "description": "Invoice number already exists."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/invoices/{invoice_id}": {
+      "get": {
+        "tags": [
+          "Invoices"
+        ],
+        "summary": "Get an invoice in the current landlord scope",
+        "operationId": "get_invoice_api_v1_invoices__invoice_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord invoice read access is required."
+          },
+          "404": {
+            "description": "Invoice not found in this landlord scope."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Database unavailable."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/unassigned-payments": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "List unresolved payments in the current landlord scope",
+        "operationId": "list_unassigned_payments_api_v1_unassigned_payments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UnassignedPaymentRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Unassigned Payments Api V1 Unassigned Payments Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord payment assignment access is required."
+          },
+          "500": {
+            "description": "The payment query failed."
+          },
+          "503": {
+            "description": "Authentication or database context is unavailable."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/unassigned-payments/{payment_id}/resolve": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Assign and financially reconcile an unresolved payment",
+        "operationId": "resolve_unassigned_payment_api_v1_unassigned_payments__payment_id__resolve_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Payment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnassignedPaymentResolve"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnassignedPaymentResolutionRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord payment assignment access is required."
+          },
+          "404": {
+            "description": "Payment or active tenant not found in this landlord scope."
+          },
+          "409": {
+            "description": "Payment has already been resolved or conflicts with financial records."
+          },
+          "500": {
+            "description": "The financial transaction failed and was rolled back."
+          },
+          "503": {
+            "description": "Authentication or database context is unavailable."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ledger": {
+      "get": {
+        "tags": [
+          "Ledger"
+        ],
+        "summary": "List ledger entries in the current landlord scope",
+        "operationId": "list_ledger_entries_api_v1_ledger_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "payment_transaction_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Payment Transaction Id"
+            }
+          },
+          {
+            "name": "tenant_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "name": "invoice_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Invoice Id"
+            }
+          },
+          {
+            "name": "unit_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Unit Id"
+            }
+          },
+          {
+            "name": "property_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Property Id"
+            }
+          },
+          {
+            "name": "receipt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Receipt"
+            }
+          },
+          {
+            "name": "created_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created From"
+            }
+          },
+          {
+            "name": "created_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerEntryPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord payment read access is required."
+          },
+          "422": {
+            "description": "A query parameter is invalid."
+          },
+          "500": {
+            "description": "Unexpected ledger query failure."
+          }
+        }
+      }
+    },
+    "/api/v1/ledger/{entry_id}": {
+      "get": {
+        "tags": [
+          "Ledger"
+        ],
+        "summary": "Get a ledger entry in the current landlord scope",
+        "operationId": "get_ledger_entry_api_v1_ledger__entry_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerEntryRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord payment read access is required."
+          },
+          "404": {
+            "description": "Ledger entry not found in this landlord scope."
+          },
+          "422": {
+            "description": "The ledger entry ID is invalid."
+          },
+          "500": {
+            "description": "Unexpected ledger query failure."
+          }
+        }
+      }
+    },
+    "/api/v1/bff/landlord/me": {
+      "get": {
+        "tags": [
+          "Landlord",
+          "Landlord"
+        ],
+        "summary": "Get the authenticated landlord context",
+        "description": "Return the authenticated landlord context.\n\nThe landlord scope comes from the verified membership. The service\nand repository query that scope through the normal RLS-bound session.",
+        "operationId": "get_landlord_context_api_v1_bff_landlord_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LandlordContextRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required or the token is invalid."
+          },
+          "403": {
+            "description": "An active landlord membership is required."
+          },
+          "500": {
+            "description": "Unexpected database or server failure."
+          },
+          "503": {
+            "description": "Authentication dependencies are unavailable."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/bff/caretaker/me": {
+      "get": {
+        "tags": [
+          "Caretaker",
+          "Caretaker"
+        ],
+        "summary": "Get Caretaker Context",
+        "description": "Return the authenticated caretaker context.\n\nThis endpoint establishes the caretaker API boundary\nand verifies that the authenticated principal is both\na caretaker and has unit-read permission.",
+        "operationId": "get_caretaker_context_api_v1_bff_caretaker_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Get Caretaker Context Api V1 Bff Caretaker Me Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Root  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body": {
+        "properties": {
+          "stkCallback": {
+            "$ref": "#/components/schemas/StkCallback"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stkCallback"
+        ],
+        "title": "Body",
+        "description": "M-Pesa callback body."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InvoiceCreate": {
+        "properties": {
+          "unit_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Unit Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "invoice_number": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Invoice Number"
+          },
+          "billing_month": {
+            "type": "string",
+            "format": "date",
+            "title": "Billing Month"
+          },
+          "rent_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Rent Amount"
+          },
+          "water_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Water Amount",
+            "default": "0.00"
+          },
+          "garbage_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Garbage Amount",
+            "default": "0.00"
+          },
+          "security_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Security Amount",
+            "default": "0.00"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Due Date"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit_id",
+          "tenant_id",
+          "invoice_number",
+          "billing_month",
+          "rent_amount",
+          "due_date"
+        ],
+        "title": "InvoiceCreate"
+      },
+      "InvoiceRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "unit_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Unit Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "invoice_number": {
+            "type": "string",
+            "title": "Invoice Number"
+          },
+          "billing_month": {
+            "type": "string",
+            "format": "date",
+            "title": "Billing Month"
+          },
+          "rent_amount": {
+            "type": "string",
+            "title": "Rent Amount"
+          },
+          "water_amount": {
+            "type": "string",
+            "title": "Water Amount"
+          },
+          "garbage_amount": {
+            "type": "string",
+            "title": "Garbage Amount"
+          },
+          "security_amount": {
+            "type": "string",
+            "title": "Security Amount"
+          },
+          "total_amount": {
+            "type": "string",
+            "title": "Total Amount"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Due Date"
+          },
+          "is_paid": {
+            "type": "boolean",
+            "title": "Is Paid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "unit_id",
+          "tenant_id",
+          "invoice_number",
+          "billing_month",
+          "rent_amount",
+          "water_amount",
+          "garbage_amount",
+          "security_amount",
+          "total_amount",
+          "due_date",
+          "is_paid",
+          "created_at"
+        ],
+        "title": "InvoiceRead"
+      },
+      "ItemKV": {
+        "properties": {
+          "Name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "Value": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Name"
+        ],
+        "title": "ItemKV",
+        "description": "Single Name/Value item from M-Pesa CallbackMetadata."
+      },
+      "LandlordContextRead": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "landlord_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Landlord Id"
+          },
+          "property_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Property Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "role",
+          "landlord_id",
+          "property_count"
+        ],
+        "title": "LandlordContextRead"
+      },
+      "LedgerEntryPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LedgerEntryRead"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "LedgerEntryPage"
+      },
+      "LedgerEntryRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "unit_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Unit Id"
+          },
+          "tenant_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tenant Id"
+          },
+          "invoice_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Id"
+          },
+          "payment_transaction_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Transaction Id"
+          },
+          "mpesa_receipt_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mpesa Receipt Number"
+          },
+          "entry_type": {
+            "type": "string",
+            "title": "Entry Type"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "payment_method": {
+            "type": "string",
+            "title": "Payment Method"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "unit_id",
+          "tenant_id",
+          "invoice_id",
+          "payment_transaction_id",
+          "mpesa_receipt_number",
+          "entry_type",
+          "amount",
+          "payment_method",
+          "status",
+          "description",
+          "created_at"
+        ],
+        "title": "LedgerEntryRead"
+      },
+      "MpesaStkPushCallbackPayload": {
+        "properties": {
+          "Body": {
+            "$ref": "#/components/schemas/Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Body"
+        ],
+        "title": "MpesaStkPushCallbackPayload",
+        "description": "Complete M-Pesa STK callback payload."
+      },
+      "PaymentAllocationRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "payment_transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Payment Transaction Id"
+          },
+          "invoice_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Invoice Id"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "reversed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reversed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "payment_transaction_id",
+          "invoice_id",
+          "amount",
+          "status",
+          "created_at",
+          "reversed_at"
+        ],
+        "title": "PaymentAllocationRead"
+      },
+      "PaymentCreditRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "payment_transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Payment Transaction Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "available_amount": {
+            "type": "string",
+            "title": "Available Amount"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "applied_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "payment_transaction_id",
+          "tenant_id",
+          "amount",
+          "available_amount",
+          "status",
+          "created_at",
+          "applied_at"
+        ],
+        "title": "PaymentCreditRead"
+      },
+      "PaymentTransactionRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "mpesa_receipt_number": {
+            "type": "string",
+            "title": "Mpesa Receipt Number"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "payment_method": {
+            "type": "string",
+            "title": "Payment Method"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tenant_id",
+          "mpesa_receipt_number",
+          "amount",
+          "payment_method",
+          "status",
+          "created_at",
+          "completed_at"
+        ],
+        "title": "PaymentTransactionRead"
+      },
+      "PropertyRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "county": {
+            "type": "string",
+            "title": "County"
+          },
+          "town_location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Town Location"
+          },
+          "total_units": {
+            "type": "integer",
+            "title": "Total Units"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "county",
+          "town_location",
+          "total_units",
+          "created_at"
+        ],
+        "title": "PropertyRead"
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "LANDLORD",
+          "CARETAKER",
+          "TENANT",
+          "ADMIN",
+          "SYSTEM"
+        ],
+        "title": "Role",
+        "description": "Application roles.\n\nLANDLORD:\n    Full administrative control over the landlord's portfolio.\n\nCARETAKER:\n    Restricted operational access.\n\nTENANT:\n    Limited tenant-facing access.\n\nADMIN:\n    Platform administration and operations.\n\nSYSTEM:\n    Trusted internal service-to-service operations."
+      },
+      "StkCallback": {
+        "properties": {
+          "MerchantRequestID": {
+            "type": "string",
+            "title": "Merchantrequestid"
+          },
+          "CheckoutRequestID": {
+            "type": "string",
+            "title": "Checkoutrequestid"
+          },
+          "ResultCode": {
+            "type": "integer",
+            "title": "Resultcode"
+          },
+          "ResultDesc": {
+            "type": "string",
+            "title": "Resultdesc"
+          },
+          "CallbackMetadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StkCallbackMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "MerchantRequestID",
+          "CheckoutRequestID",
+          "ResultCode",
+          "ResultDesc"
+        ],
+        "title": "StkCallback",
+        "description": "M-Pesa STK Push callback."
+      },
+      "StkCallbackMetadata": {
+        "properties": {
+          "Item": {
+            "items": {
+              "$ref": "#/components/schemas/ItemKV"
+            },
+            "type": "array",
+            "title": "Item"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Item"
+        ],
+        "title": "StkCallbackMetadata",
+        "description": "Metadata returned by a successful M-Pesa STK transaction."
+      },
+      "StkPushRequest": {
+        "properties": {
+          "phone_number": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "pattern": "^254\\d{9}$",
+            "title": "Phone Number",
+            "description": "Safaricom number in 254XXXXXXXXX format",
+            "examples": [
+              "254798765432"
+            ]
+          },
+          "amount": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Amount",
+            "description": "Amount in Kenyan Shillings",
+            "examples": [
+              150
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "phone_number",
+          "amount"
+        ],
+        "title": "StkPushRequest",
+        "description": "Request received by KodiLedger when initiating\nan STK Push."
+      },
+      "StkPushResponse": {
+        "properties": {
+          "MerchantRequestID": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merchantrequestid"
+          },
+          "CheckoutRequestID": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkoutrequestid"
+          },
+          "ResponseCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsecode"
+          },
+          "ResponseDescription": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsedescription"
+          },
+          "CustomerMessage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customermessage"
+          }
+        },
+        "type": "object",
+        "title": "StkPushResponse",
+        "description": "Response returned by Safaricom after an STK Push\ninitiation request."
+      },
+      "StkRequestQueueItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "checkout_request_id": {
+            "type": "string",
+            "title": "Checkout Request Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "query_count": {
+            "type": "integer",
+            "title": "Query Count"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "last_queried_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Queried At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "checkout_request_id",
+          "status",
+          "query_count",
+          "created_at",
+          "last_queried_at"
+        ],
+        "title": "StkRequestQueueItem"
+      },
+      "StkRequestQueuePage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StkRequestQueueItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "StkRequestQueuePage"
+      },
+      "TenantCreate": {
+        "properties": {
+          "unit_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Unit Id"
+          },
+          "full_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Full Name"
+          },
+          "primary_phone": {
+            "type": "string",
+            "pattern": "^254\\d{9}$",
+            "title": "Primary Phone",
+            "description": "Kenyan phone number in 254XXXXXXXXX format"
+          },
+          "id_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id Number"
+          },
+          "lease_start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Lease Start Date"
+          },
+          "deposit_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Deposit Amount",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit_id",
+          "full_name",
+          "primary_phone",
+          "lease_start_date"
+        ],
+        "title": "TenantCreate"
+      },
+      "TenantRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "unit_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Unit Id"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "primary_phone": {
+            "type": "string",
+            "title": "Primary Phone"
+          },
+          "lease_start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Lease Start Date"
+          },
+          "deposit_amount": {
+            "type": "string",
+            "title": "Deposit Amount"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "unit_id",
+          "full_name",
+          "primary_phone",
+          "lease_start_date",
+          "deposit_amount",
+          "is_active",
+          "created_at"
+        ],
+        "title": "TenantRead"
+      },
+      "UnassignedPaymentRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "mpesa_receipt_number": {
+            "type": "string",
+            "title": "Mpesa Receipt Number"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "payer_phone": {
+            "type": "string",
+            "title": "Payer Phone"
+          },
+          "payer_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payer Name"
+          },
+          "invalid_account_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalid Account Reference"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "mpesa_receipt_number",
+          "amount",
+          "payer_phone",
+          "payer_name",
+          "invalid_account_reference",
+          "created_at"
+        ],
+        "title": "UnassignedPaymentRead"
+      },
+      "UnassignedPaymentResolutionRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "payment_transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Payment Transaction Id"
+          },
+          "mpesa_receipt_number": {
+            "type": "string",
+            "title": "Mpesa Receipt Number"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "unit_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Unit Id"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "allocation": {
+            "type": "object",
+            "title": "Allocation"
+          },
+          "outbox_event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Outbox Event Id"
+          },
+          "resolved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Resolved At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "payment_transaction_id",
+          "mpesa_receipt_number",
+          "tenant_id",
+          "unit_id",
+          "amount",
+          "allocation",
+          "outbox_event_id",
+          "resolved_at"
+        ],
+        "title": "UnassignedPaymentResolutionRead"
+      },
+      "UnassignedPaymentResolve": {
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tenant_id"
+        ],
+        "title": "UnassignedPaymentResolve"
+      },
+      "UnitCreate": {
+        "properties": {
+          "unit_number": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Unit Number"
+          },
+          "base_rent": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Base Rent"
+          },
+          "garbage_fee": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Garbage Fee",
+            "default": "0.00"
+          },
+          "security_fee": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Security Fee",
+            "default": "0.00"
+          },
+          "water_rate_per_unit": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Water Rate Per Unit",
+            "default": "0.00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit_number",
+          "base_rent"
+        ],
+        "title": "UnitCreate"
+      },
+      "UnitRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Property Id"
+          },
+          "unit_number": {
+            "type": "string",
+            "title": "Unit Number"
+          },
+          "base_rent": {
+            "type": "string",
+            "title": "Base Rent"
+          },
+          "garbage_fee": {
+            "type": "string",
+            "title": "Garbage Fee"
+          },
+          "security_fee": {
+            "type": "string",
+            "title": "Security Fee"
+          },
+          "water_rate_per_unit": {
+            "type": "string",
+            "title": "Water Rate Per Unit"
+          },
+          "is_occupied": {
+            "type": "boolean",
+            "title": "Is Occupied"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "property_id",
+          "unit_number",
+          "base_rent",
+          "garbage_fee",
+          "security_fee",
+          "water_rate_per_unit",
+          "is_occupied",
+          "created_at"
+        ],
+        "title": "UnitRead"
+      },
+      "UnitUpdate": {
+        "properties": {
+          "unit_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Number"
+          },
+          "base_rent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Rent"
+          },
+          "garbage_fee": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Garbage Fee"
+          },
+          "security_fee": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Security Fee"
+          },
+          "water_rate_per_unit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Water Rate Per Unit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "UnitUpdate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
