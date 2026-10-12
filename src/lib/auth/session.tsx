@@ -23,6 +23,7 @@ interface AuthContextValue {
   state: AuthState;
   api: Endpoints;
   signIn: (email: string, password: string) => Promise<string | null>;
+  signUp: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   retry: () => void;
 }
@@ -106,6 +107,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return error ? "Sign-in failed. Check your email and password." : null;
   }, []);
 
+  const signUp = useCallback(async (email: string, password: string) => {
+    const supabase = getSupabase();
+    if (!supabase) return "Registration is not configured.";
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/login` },
+    });
+    if (!error) return null;
+    if (error.message.toLowerCase().includes("already registered")) {
+      return "An account with this email may already exist. Try signing in.";
+    }
+    return "Could not create the account. Check the details and try again.";
+  }, []);
+
   const signOut = useCallback(async () => {
     await getSupabase()?.auth.signOut();
     setState({ status: "signed_out" });
@@ -113,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
-  const value = useMemo(() => ({ state, api, signIn, signOut, retry }), [state, api, signIn, signOut, retry]);
+  const value = useMemo(() => ({ state, api, signIn, signUp, signOut, retry }), [state, api, signIn, signUp, signOut, retry]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

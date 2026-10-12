@@ -6,11 +6,13 @@ import { LoadingScreen, MisconfiguredScreen } from "@/components/AuthScreens";
 import { useAuth } from "@/lib/auth/session";
 
 export default function LoginPage() {
-  const { state, signIn } = useAuth();
+  const { state, signIn, signUp } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [registering, setRegistering] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -24,20 +26,36 @@ export default function LoginPage() {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const err = await signIn(email.trim(), password);
-    if (err) setError(err);
-    setBusy(false);
+    setNotice(null);
+    try {
+      if (registering) {
+        const err = await signUp(email.trim(), password);
+        if (err) setError(err);
+        else {
+          setNotice("Account created. Check your email to confirm it, then sign in. KodiLedger access also requires an administrator-assigned membership.");
+          setRegistering(false);
+        }
+      } else {
+        const err = await signIn(email.trim(), password);
+        if (err) setError(err);
+      }
+    } catch {
+      setError("Authentication request failed. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
     <div className="center-screen">
       <form className="panel center-card form" onSubmit={submit}>
-        <h1>Sign in to KodiLedger</h1>
+        <h1>{registering ? "Create a KodiLedger account" : "Sign in to KodiLedger"}</h1>
         {state.status === "signed_out" && state.notice && (
           <p role="status" className="form-error">
             {state.notice}
           </p>
         )}
+        {notice && <p role="status" className="form-success">{notice}</p>}
         <div className="field">
           <label htmlFor="email">Email</label>
           <input id="email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -47,10 +65,11 @@ export default function LoginPage() {
           <input
             id="password"
             type="password"
-            autoComplete="current-password"
+            autoComplete={registering ? "new-password" : "current-password"}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            minLength={registering ? 8 : undefined}
           />
         </div>
         {error && (
@@ -59,9 +78,23 @@ export default function LoginPage() {
           </p>
         )}
         <button className="btn btn-primary" type="submit" disabled={busy}>
-          {busy ? "Signing in…" : "Sign in"}
+          {busy ? (registering ? "Creating account..." : "Signing in...") : (registering ? "Create account" : "Sign in")}
         </button>
-        <p className="help">Accounts are provisioned by KodiLedger. Registration is not available here.</p>
+        <button
+          className="btn btn-ghost"
+          type="button"
+          disabled={busy}
+          onClick={() => {
+            setRegistering((value) => !value);
+            setError(null);
+            setNotice(null);
+          }}
+        >
+          {registering ? "Back to sign in" : "Create an account"}
+        </button>
+        {registering && (
+          <p className="help">Creating an account does not grant access to KodiLedger data. An administrator must assign a membership.</p>
+        )}
       </form>
     </div>
   );
