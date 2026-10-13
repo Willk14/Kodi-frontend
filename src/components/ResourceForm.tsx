@@ -16,6 +16,8 @@ const INPUT_MODE: Record<FieldSpec["kind"], "text" | "numeric" | "tel" | "decima
 export function ResourceForm(props: {
   specs: FieldSpec[];
   options?: Record<string, { value: string; label: string }[]>;
+  disabledOptions?: string[];
+  optionPlaceholders?: Record<string, string>;
   initial?: Record<string, string>;
   submitLabel: string;
   /** PATCH mode: only changed fields are sent, and at least one must change. */
@@ -78,9 +80,10 @@ export function ResourceForm(props: {
               onChange={(e) => setValues((v) => ({ ...v, [s.name]: e.target.value }))}
               aria-invalid={err ? true : undefined}
               aria-describedby={err ? `${id}-err` : undefined}
+              disabled={props.disabledOptions?.includes(s.name)}
               required={s.required && !props.patch}
             >
-              <option value="">Choose a unit</option>
+              <option value="">{props.optionPlaceholders?.[s.name] ?? "Choose an option"}</option>
               {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select> : <input
               id={id}

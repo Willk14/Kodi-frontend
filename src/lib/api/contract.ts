@@ -10,7 +10,7 @@ export const UNIT_CREATE_FIELDS: FieldSpec[] = [
 ];
 export const UNIT_PATCH_FIELDS: FieldSpec[] = UNIT_CREATE_FIELDS.map((field) => ({ ...field, required: false }));
 export const TENANT_CREATE_FIELDS: FieldSpec[] = [
-  { name: "unit_id", label: "Unit ID", kind: "uuid", required: true },
+  { name: "unit_id", label: "Unit", kind: "uuid", required: true },
   { name: "full_name", label: "Full name", kind: "text", required: true, maxLength: 255 },
   { name: "primary_phone", label: "Phone (254XXXXXXXXX)", kind: "phone", required: true, pattern: /^254\d{9}$/, help: "Format: 254712345678" },
   { name: "lease_start_date", label: "Lease start date", kind: "date", required: true },
