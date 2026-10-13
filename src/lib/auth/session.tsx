@@ -24,7 +24,7 @@ interface AuthContextValue {
   state: AuthState;
   api: Endpoints;
   signIn: (email: string, password: string) => Promise<string | null>;
-  signUp: (email: string, password: string) => Promise<string | null>;
+  signUp: (email: string, password: string, requestedRole: "LANDLORD" | "CARETAKER") => Promise<string | null>;
   requestPasswordReset: (email: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   retry: () => void;
@@ -118,13 +118,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return error ? "Sign-in failed. Check your email and password." : null;
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string) => {
+  const signUp = useCallback(async (email: string, password: string, requestedRole: "LANDLORD" | "CARETAKER") => {
     const supabase = getSupabase();
     if (!supabase) return "Registration is not configured.";
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/login` },
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        data: { requested_role: requestedRole },
+      },
     });
     if (!error) return null;
     if (error.message.toLowerCase().includes("already registered")) {

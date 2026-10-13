@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
+  const [requestedRole, setRequestedRole] = useState<"LANDLORD" | "CARETAKER">("LANDLORD");
   const [busy, setBusy] = useState(false);
   const [resetBusy, setResetBusy] = useState(false);
 
@@ -30,10 +31,10 @@ export default function LoginPage() {
     setNotice(null);
     try {
       if (registering) {
-        const err = await signUp(email.trim(), password);
+        const err = await signUp(email.trim(), password, requestedRole);
         if (err) setError(err);
         else {
-          setNotice("Account created. Check your email to confirm it, then sign in. KodiLedger access also requires an administrator-assigned membership.");
+          setNotice(`Account created. Confirm your email. Your requested role is ${requestedRole === "LANDLORD" ? "landlord" : "caretaker"}; a KodiLedger administrator must link your account and assign its membership before you can access the app.`);
           setRegistering(false);
         }
       } else {
@@ -74,6 +75,15 @@ export default function LoginPage() {
           <label htmlFor="email">Email</label>
           <input id="email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
+        {registering && (
+          <div className="field">
+            <label htmlFor="requested-role">I am registering as</label>
+            <select id="requested-role" value={requestedRole} onChange={(e) => setRequestedRole(e.target.value as "LANDLORD" | "CARETAKER")}>
+              <option value="LANDLORD">Landlord</option>
+              <option value="CARETAKER">Caretaker</option>
+            </select>
+          </div>
+        )}
         <div className="field">
           <label htmlFor="password">Password</label>
           <input
@@ -112,7 +122,7 @@ export default function LoginPage() {
           {registering ? "Back to sign in" : "Create an account"}
         </button>
         {registering && (
-          <p className="help">Creating an account does not grant access to KodiLedger data. An administrator must assign a membership.</p>
+          <p className="help">This records your requested role only. Access is granted after a KodiLedger administrator assigns a membership. Caretakers must be assigned to a landlord.</p>
         )}
       </form>
     </div>
