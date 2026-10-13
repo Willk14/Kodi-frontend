@@ -64,13 +64,14 @@ export function ResourceForm(props: {
       {props.specs.map((s) => {
         const id = `${uid}-${s.name}`;
         const err = errors[s.name];
+        const options = props.options?.[s.name];
         return (
           <div key={s.name} className="field">
             <label htmlFor={id}>
               {s.label}
               {s.required && <span aria-hidden="true"> *</span>}
             </label>
-            {props.options?.[s.name] ? <select
+            {options ? <select
               id={id}
               name={s.name}
               value={values[s.name] ?? ""}
@@ -80,7 +81,7 @@ export function ResourceForm(props: {
               required={s.required && !props.patch}
             >
               <option value="">Choose a unit</option>
-              {props.options[s.name].map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select> : <input
               id={id}
               name={s.name}
