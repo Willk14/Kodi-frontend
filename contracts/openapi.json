@@ -504,6 +504,56 @@
             "HTTPBearer": []
           }
         ]
+      },
+      "post": {
+        "tags": [
+          "Properties"
+        ],
+        "summary": "Create a landlord property",
+        "operationId": "create_property_api_v1_properties_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Landlord property-write permission is required."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/api/v1/properties/{property_id}": {
@@ -2243,6 +2293,47 @@
           "completed_at"
         ],
         "title": "PaymentTransactionRead"
+      },
+      "PropertyCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "county": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "County"
+          },
+          "town_location": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Town Location"
+          },
+          "total_units": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Total Units"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "county",
+          "total_units"
+        ],
+        "title": "PropertyCreate"
       },
       "PropertyRead": {
         "properties": {

@@ -3,6 +3,7 @@ import type { components, operations } from "./generated/schema";
 export type Schema = components["schemas"];
 export type Role = "LANDLORD" | "CARETAKER" | "TENANT";
 export type Property = Schema["PropertyRead"];
+export type PropertyCreate = Schema["PropertyCreate"];
 export type Unit = Schema["UnitRead"];
 export type Tenant = Schema["TenantRead"];
 export type Invoice = Schema["InvoiceRead"];

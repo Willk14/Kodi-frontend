@@ -68,11 +68,11 @@ Home content depends on the resolved role. Use the shared app shell and a page h
 
 **Purpose:** Find a property and open its details.
 
-**Hierarchy:** “Properties” title; note that property create/edit/delete is unavailable; responsive table with derived columns and row links.
+**Hierarchy:** “Properties” title, Add property action, and a responsive table with derived columns and row links.
 
 **States:** Loading, request error with retry, and “No properties” empty state. Empty hint: no properties are visible to the account.
 
-**Actions:** Open a property. No create action is shown.
+**Actions:** Add a property with its name, county, town or area, and unit count; open a property.
 
 ### Property detail — `/properties/[id]`
 

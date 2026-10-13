@@ -6,14 +6,19 @@ import { useReadyAuth } from "@/lib/auth/session";
 import { mapProperty } from "@/lib/api/view-models";
 import { DateTimeEAT } from "@/components/DesignSystem";
 import { ResourceDetails } from "@/components/ResourceDetails";
+import { AddProperty } from "@/components/AddProperty";
+import { useState } from "react";
 
 export default function PropertiesPage() {
   const { api } = useReadyAuth();
+  const [refreshKey, setRefreshKey] = useState(0);
   return (
     <RoleGate roles={["LANDLORD"]}>
       <ResourceList
+        key={refreshKey}
         title="Properties"
-        description="Properties are read-only in the current API."
+        description="Manage your rental properties and their units."
+        create={<AddProperty api={api} onCreated={() => setRefreshKey((value) => value + 1)} />}
         load={async () => (await api.properties()).map(mapProperty)}
         basePath="/properties"
         emptyTitle="No properties"

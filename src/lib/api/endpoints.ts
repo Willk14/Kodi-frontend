@@ -1,11 +1,11 @@
 import type { ApiClient, Query } from "./client";
 import { PAGINATION } from "./contract";
-import type { Allocation, Credit, Invoice, InvoiceCreate, LedgerEntry, Page, Payment, Property, ResolveUnassigned, Resolution, Schema, Tenant, TenantCreate, UnassignedPayment, Unit, UnitCreate, UnitPatch } from "./types";
+import type { Allocation, Credit, Invoice, InvoiceCreate, LedgerEntry, Page, Payment, Property, PropertyCreate, ResolveUnassigned, Resolution, Schema, Tenant, TenantCreate, UnassignedPayment, Unit, UnitCreate, UnitPatch } from "./types";
 
 const id = (value: string) => encodeURIComponent(value);
 export const FRONTEND_API_ROUTES = [
   "GET /api/v1/bff/landlord/me", "GET /api/v1/bff/caretaker/me", "GET /api/v1/tenants/me",
-  "GET /api/v1/properties", "GET /api/v1/properties/{property_id}", "GET /api/v1/properties/{property_id}/units",
+  "GET /api/v1/properties", "POST /api/v1/properties", "GET /api/v1/properties/{property_id}", "GET /api/v1/properties/{property_id}/units",
   "POST /api/v1/properties/{property_id}/units", "GET /api/v1/units/{unit_id}", "PATCH /api/v1/units/{unit_id}",
   "GET /api/v1/tenants", "GET /api/v1/tenants/{tenant_id}", "POST /api/v1/tenants",
   "GET /api/v1/invoices", "GET /api/v1/invoices/{invoice_id}", "POST /api/v1/invoices",
@@ -21,7 +21,7 @@ export function createEndpoints(c: ApiClient) {
     landlordMe: () => c.get<Schema["LandlordContextRead"]>("/bff/landlord/me"),
     caretakerMe: () => c.get<{ user_id: string; role: string; landlord_id: string }>("/bff/caretaker/me"),
     tenantMe: () => c.get<Tenant>("/tenants/me"),
-    properties: () => c.get<Property[]>("/properties"), property: (pid: string) => c.get<Property>(`/properties/${id(pid)}`),
+    properties: () => c.get<Property[]>("/properties"), createProperty: (body: PropertyCreate) => c.post<Property>("/properties", body), property: (pid: string) => c.get<Property>(`/properties/${id(pid)}`),
     units: (pid: string) => c.get<Unit[]>(`/properties/${id(pid)}/units`),
     createUnit: (pid: string, body: UnitCreate) => c.post<Unit>(`/properties/${id(pid)}/units`, body),
     unit: (uid: string) => c.get<Unit>(`/units/${id(uid)}`), patchUnit: (uid: string, body: UnitPatch) => c.patch<Unit>(`/units/${id(uid)}`, body),

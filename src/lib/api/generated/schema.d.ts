@@ -165,7 +165,8 @@ export interface paths {
         /** List landlord properties */
         get: operations["list_properties_api_v1_properties_get"];
         put?: never;
-        post?: never;
+        /** Create a landlord property */
+        post: operations["create_property_api_v1_properties_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -713,6 +714,17 @@ export interface components {
             created_at: string;
             /** Completed At */
             completed_at: string | null;
+        };
+        /** PropertyCreate */
+        PropertyCreate: {
+            /** Name */
+            name: string;
+            /** County */
+            county: string;
+            /** Town Location */
+            town_location?: string | null;
+            /** Total Units */
+            total_units: number;
         };
         /** PropertyRead */
         PropertyRead: {
@@ -1521,6 +1533,53 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    create_property_api_v1_properties_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PropertyCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyRead"];
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Landlord property-write permission is required. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
