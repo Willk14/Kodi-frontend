@@ -18,6 +18,7 @@ export function ResourceForm(props: {
   options?: Record<string, { value: string; label: string }[]>;
   disabledOptions?: string[];
   optionPlaceholders?: Record<string, string>;
+  hiddenFields?: string[];
   initial?: Record<string, string>;
   submitLabel: string;
   /** PATCH mode: only changed fields are sent, and at least one must change. */
@@ -64,6 +65,7 @@ export function ResourceForm(props: {
   return (
     <form onSubmit={submit} noValidate className="form" aria-busy={busy}>
       {props.specs.map((s) => {
+        if (props.hiddenFields?.includes(s.name)) return null;
         const id = `${uid}-${s.name}`;
         const err = errors[s.name];
         const options = props.options?.[s.name];
@@ -88,10 +90,9 @@ export function ResourceForm(props: {
             </select> : <input
               id={id}
               name={s.name}
-              type="text"
+              type={s.kind === "date" ? "date" : "text"}
               inputMode={INPUT_MODE[s.kind]}
               autoComplete="off"
-              placeholder={s.kind === "date" ? "YYYY-MM-DD" : undefined}
               value={values[s.name] ?? ""}
               onChange={(e) => setValues((v) => ({ ...v, [s.name]: e.target.value }))}
               aria-invalid={err ? true : undefined}
