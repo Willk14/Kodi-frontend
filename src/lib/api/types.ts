@@ -19,7 +19,7 @@ export type TenantContext = Tenant;
 export type MembershipContext = LandlordContext | CaretakerContext | TenantContext;
 
 type StringMoney<T, K extends keyof T> = Omit<T, K> & { [P in K]: string };
-export type UnitCreate = { unit_number: string; base_rent: string; garbage_fee?: string; security_fee?: string; water_rate_per_unit?: string };
+export type UnitCreate = { unit_number: string; base_rent: string };
 export type UnitPatch = Partial<UnitCreate>;
 export type TenantCreate = Omit<Schema["TenantCreate"], "deposit_amount"> & { deposit_amount?: string; id_number?: string };
 export type InvoiceCreate = Omit<Schema["InvoiceCreate"], "rent_amount" | "water_amount" | "garbage_amount" | "security_amount"> & {

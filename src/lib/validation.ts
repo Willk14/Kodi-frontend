@@ -7,7 +7,7 @@ export const isUuid = (v: string) => UUID_RE.test(v.trim());
 export const isKenyanPhone = (v: string) => PHONE_RE.test(v.trim());
 
 export function isDecimalString(v: string, maxDecimals = 2): boolean {
-  const re = new RegExp(`^\\d+(\\.\\d{1,${maxDecimals}})?$`);
+  const re = new RegExp(`^(?:\\d+|\\d{1,3}(?:,\\d{3})+)(\\.\\d{1,${maxDecimals}})?$`);
   return re.test(v.trim());
 }
 
@@ -33,10 +33,10 @@ export function validateField(spec: FieldSpec, raw: string): string | null {
       return (spec.pattern ?? /^254\d{9}$/).test(v) ? null : "Use the format 254XXXXXXXXX (e.g. 254712345678).";
     case "decimal": {
       const dp = spec.maxDecimals ?? 2;
-      if (!isDecimalString(v, dp)) return `Enter a number with at most ${dp} decimal places (no commas or signs).`;
-      if (spec.min === "0" ? !/^\d+(?:\.\d+)?$/.test(v) : !isPositiveDecimal(v, dp)) return "Must be a nonnegative amount.";
+      if (!isDecimalString(v, dp)) return `Enter an amount with at most ${dp} decimal places. Use commas only as thousands separators.`;
+      if (spec.min === "0" ? !/^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(v) : !isPositiveDecimal(v, dp)) return "Must be a nonnegative amount.";
       if (spec.maxDigits) {
-        const [whole = "0", fraction = ""] = v.split(".");
+        const [whole = "0", fraction = ""] = v.replaceAll(",", "").split(".");
         const digits = Math.max(whole.replace(/^0+/, "").length + fraction.length, fraction.length || 1);
         if (digits > spec.maxDigits) return `At most ${spec.maxDigits} digits.`;
       }
@@ -73,7 +73,7 @@ export function buildPayload(
     const v = (values[s.name] ?? "").trim();
     if (!v) continue;
     if (initial && (initial[s.name] ?? "").trim() === v) continue;
-    out[s.name] = v; // decimals stay strings
+    out[s.name] = s.kind === "decimal" ? v.replaceAll(",", "") : v;
   }
   return out;
 }

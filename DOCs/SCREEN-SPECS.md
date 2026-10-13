@@ -82,7 +82,7 @@ Home content depends on the resolved role. Use the shared app shell and a page h
 
 **States:** Property and units load independently and each has loading/error/empty behavior. Unit empty state says no units are in this property.
 
-**Actions:** Open a unit from the unit list. Landlords can create a unit; success refreshes the unit list. Caretakers only view. Unit deletion is unavailable.
+**Actions:** Open a unit from the unit list. Landlords can create a unit using unit number and base rent; success refreshes the unit list. Caretakers only view. Unit deletion is unavailable.
 
 ### Unit detail — `/units/[id]`
 
@@ -90,7 +90,7 @@ Home content depends on the resolved role. Use the shared app shell and a page h
 
 **Hierarchy:** “Unit” title and back link to Properties; unit details panel; landlord-only “Edit unit” section.
 
-**Actions:** Landlords can save changed supported fields. On success, show “Unit updated.” and reload details. Caretakers see details without the edit form.
+**Actions:** Landlords can save a changed unit number or base rent. Amounts accept comma-separated thousands and optional decimals. On success, show “Unit updated.” and reload details. Caretakers see details without the edit form.
 
 **States:** Loading, not found/error with retry where applicable, details, field validation, save error, and save success.
 
@@ -109,6 +109,8 @@ Home content depends on the resolved role. Use the shared app shell and a page h
 **Audience:** Landlord only.
 
 **Hierarchy:** “Add tenant” title with back link to Tenants; focused form inside a panel; primary “Create tenant” action.
+
+**Actions:** Choose an existing unit from a dropdown labeled with its property and unit number.
 
 **Behavior:** Show field-level validation and API errors; preserve entered values on recoverable failure. On success, navigate to the new tenant detail when an ID is returned, otherwise to the tenant list.
 

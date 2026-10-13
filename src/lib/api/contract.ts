@@ -7,9 +7,6 @@ export interface FieldSpec {
 export const UNIT_CREATE_FIELDS: FieldSpec[] = [
   { name: "unit_number", label: "Unit number", kind: "text", required: true, maxLength: 50 },
   { name: "base_rent", label: "Base rent (KES)", kind: "decimal", required: true, maxDecimals: 2, maxDigits: 12, min: "0" },
-  { name: "garbage_fee", label: "Garbage fee (KES)", kind: "decimal", maxDecimals: 2, maxDigits: 10, min: "0", help: "Optional; defaults to KES 0.00." },
-  { name: "security_fee", label: "Security fee (KES)", kind: "decimal", maxDecimals: 2, maxDigits: 10, min: "0", help: "Optional; defaults to KES 0.00." },
-  { name: "water_rate_per_unit", label: "Water rate per unit (KES)", kind: "decimal", maxDecimals: 2, maxDigits: 10, min: "0", help: "Optional; defaults to KES 0.00." },
 ];
 export const UNIT_PATCH_FIELDS: FieldSpec[] = UNIT_CREATE_FIELDS.map((field) => ({ ...field, required: false }));
 export const TENANT_CREATE_FIELDS: FieldSpec[] = [

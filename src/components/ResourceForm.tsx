@@ -15,6 +15,7 @@ const INPUT_MODE: Record<FieldSpec["kind"], "text" | "numeric" | "tel" | "decima
 
 export function ResourceForm(props: {
   specs: FieldSpec[];
+  options?: Record<string, { value: string; label: string }[]>;
   initial?: Record<string, string>;
   submitLabel: string;
   /** PATCH mode: only changed fields are sent, and at least one must change. */
@@ -69,7 +70,18 @@ export function ResourceForm(props: {
               {s.label}
               {s.required && <span aria-hidden="true"> *</span>}
             </label>
-            <input
+            {props.options?.[s.name] ? <select
+              id={id}
+              name={s.name}
+              value={values[s.name] ?? ""}
+              onChange={(e) => setValues((v) => ({ ...v, [s.name]: e.target.value }))}
+              aria-invalid={err ? true : undefined}
+              aria-describedby={err ? `${id}-err` : undefined}
+              required={s.required && !props.patch}
+            >
+              <option value="">Choose a unit</option>
+              {props.options[s.name].map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select> : <input
               id={id}
               name={s.name}
               type="text"
@@ -81,7 +93,7 @@ export function ResourceForm(props: {
               aria-invalid={err ? true : undefined}
               aria-describedby={err ? `${id}-err` : s.help ? `${id}-help` : undefined}
               required={s.required && !props.patch}
-            />
+            />}
             {s.help && !err && (
               <p id={`${id}-help`} className="help">
                 {s.help}
