@@ -1,6 +1,7 @@
 "use client";
 
 import type { Session } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createApiClient } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
@@ -24,6 +25,7 @@ interface AuthContextValue {
   api: Endpoints;
   signIn: (email: string, password: string) => Promise<string | null>;
   signUp: (email: string, password: string) => Promise<string | null>;
+  requestPasswordReset: (email: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   retry: () => void;
 }
@@ -31,6 +33,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [state, setState] = useState<AuthState>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
   const expiredRef = useRef(false);
@@ -67,6 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let cancelled = false;
 
+    if (new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery") {
+      router.replace(`/reset-password${window.location.hash}`);
+    }
+
     async function resolve(session: Session | null) {
       if (!session) {
         setState((s) => (s.status === "signed_out" && s.notice ? s : { status: "signed_out" }));
@@ -88,6 +95,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void supabase.auth.getSession().then(({ data }) => resolve(data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "TOKEN_REFRESHED") return; // role does not change on refresh
+      if (event === "PASSWORD_RECOVERY") {
+        router.replace("/reset-password");
+        return;
+      }
       if (event === "SIGNED_OUT") {
         setState((s) => (s.status === "signed_out" && s.notice ? s : { status: "signed_out" }));
         return;
@@ -98,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       cancelled = true;
       sub.subscription.unsubscribe();
     };
-  }, [api, attempt]);
+  }, [api, attempt, router]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     const supabase = getSupabase();
@@ -122,6 +133,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return "Could not create the account. Check the details and try again.";
   }, []);
 
+  const requestPasswordReset = useCallback(async (email: string) => {
+    const supabase = getSupabase();
+    if (!supabase) return "Password reset is not configured.";
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin,
+      });
+      if (!error) return null;
+      if (error.status === 429 || error.message.toLowerCase().includes("rate limit")) {
+        return "Too many reset emails were requested. Wait before trying again.";
+      }
+    } catch {
+      return "Could not send a reset email. Check your connection and try again later.";
+    }
+    return "Could not send a reset email. Check the address and try again later.";
+  }, []);
+
   const signOut = useCallback(async () => {
     await getSupabase()?.auth.signOut();
     setState({ status: "signed_out" });
@@ -129,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
-  const value = useMemo(() => ({ state, api, signIn, signUp, signOut, retry }), [state, api, signIn, signUp, signOut, retry]);
+  const value = useMemo(() => ({ state, api, signIn, signUp, requestPasswordReset, signOut, retry }), [state, api, signIn, signUp, requestPasswordReset, signOut, retry]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

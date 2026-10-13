@@ -6,7 +6,7 @@ import { LoadingScreen, MisconfiguredScreen } from "@/components/AuthScreens";
 import { useAuth } from "@/lib/auth/session";
 
 export default function LoginPage() {
-  const { state, signIn, signUp } = useAuth();
+  const { state, signIn, signUp, requestPasswordReset } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [resetBusy, setResetBusy] = useState(false);
 
   useEffect(() => {
     if (state.status === "ready" || state.status === "no_membership" || state.status === "error") router.replace("/");
@@ -43,6 +44,19 @@ export default function LoginPage() {
       setError("Authentication request failed. Please try again.");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function sendPasswordReset() {
+    setResetBusy(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const result = await requestPasswordReset(email.trim());
+      if (result) setError(result);
+      else setNotice("If an account exists for that email, a password reset link has been sent.");
+    } finally {
+      setResetBusy(false);
     }
   }
 
@@ -80,6 +94,11 @@ export default function LoginPage() {
         <button className="btn btn-primary" type="submit" disabled={busy}>
           {busy ? (registering ? "Creating account..." : "Signing in...") : (registering ? "Create account" : "Sign in")}
         </button>
+        {!registering && (
+          <button className="btn btn-ghost" type="button" disabled={busy || resetBusy || !email.trim()} onClick={() => void sendPasswordReset()}>
+            {resetBusy ? "Sending reset link..." : "Forgot password?"}
+          </button>
+        )}
         <button
           className="btn btn-ghost"
           type="button"
