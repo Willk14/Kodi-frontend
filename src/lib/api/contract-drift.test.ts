@@ -13,6 +13,6 @@ describe("generated API contract", () => {
       expect(schema.paths[path], `Missing OpenAPI path ${path}`).toBeDefined();
       expect(schema.paths[path]?.[method.toLowerCase()], `Missing ${route}`).toBeDefined();
     }
-    expect(FRONTEND_API_ROUTES.some((route) => route.includes("stk-push"))).toBe(false);
+    expect(FRONTEND_API_ROUTES.some((route) => route.includes("stk-push"))).toBe(true);
   });
 });

@@ -46,6 +46,71 @@
         }
       }
     },
+    "/api/v1/payments/invoices/{invoice_id}/stk-push": {
+      "post": {
+        "tags": [
+          "Payments",
+          "Payments"
+        ],
+        "summary": "Initiate an STK Push for an outstanding invoice balance",
+        "operationId": "initiate_invoice_stk_push_api_v1_payments_invoices__invoice_id__stk_push_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceStkPushRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StkPushResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invoice or active tenant not found in this landlord scope."
+          },
+          "409": {
+            "description": "Invoice has no amount due."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/payments": {
       "get": {
         "tags": [
@@ -1912,6 +1977,28 @@
           "created_at"
         ],
         "title": "InvoiceRead"
+      },
+      "InvoiceStkPushRequest": {
+        "properties": {
+          "phone_number": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "pattern": "^254\\d{9}$",
+            "title": "Phone Number",
+            "description": "Safaricom number in 254XXXXXXXXX format",
+            "examples": [
+              "254798765432"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "phone_number"
+        ],
+        "title": "InvoiceStkPushRequest",
+        "description": "Phone number to prompt for an invoice's current balance."
       },
       "ItemKV": {
         "properties": {

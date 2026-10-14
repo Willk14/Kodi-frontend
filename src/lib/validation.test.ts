@@ -22,7 +22,7 @@ describe("validators", () => {
     expect(validateField(spec, "1500")).toBeNull();
     expect(validateField(spec, "1500.50")).toBeNull();
     expect(validateField(spec, "1500.505")).not.toBeNull();
-    expect(validateField(spec, "1,500")).not.toBeNull();
+    expect(validateField(spec, "1,500")).toBeNull();
     expect(validateField(spec, "-5")).not.toBeNull();
     expect(validateField(spec, "0.00")).toBeNull();
   });

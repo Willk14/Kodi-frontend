@@ -7,6 +7,7 @@ export type PropertyCreate = Schema["PropertyCreate"];
 export type Unit = Schema["UnitRead"];
 export type Tenant = Schema["TenantRead"];
 export type Invoice = Schema["InvoiceRead"];
+export type StkPushResponse = Schema["StkPushResponse"];
 export type Payment = Schema["PaymentTransactionRead"];
 export type Allocation = Schema["PaymentAllocationRead"];
 export type Credit = Schema["PaymentCreditRead"];

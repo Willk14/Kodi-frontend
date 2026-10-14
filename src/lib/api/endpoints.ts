@@ -1,6 +1,6 @@
 import type { ApiClient, Query } from "./client";
 import { PAGINATION } from "./contract";
-import type { Allocation, Credit, Invoice, InvoiceCreate, LedgerEntry, Page, Payment, Property, PropertyCreate, ResolveUnassigned, Resolution, Schema, Tenant, TenantCreate, UnassignedPayment, Unit, UnitCreate, UnitPatch } from "./types";
+import type { Allocation, Credit, Invoice, InvoiceCreate, LedgerEntry, Page, Payment, Property, PropertyCreate, ResolveUnassigned, Resolution, Schema, StkPushResponse, Tenant, TenantCreate, UnassignedPayment, Unit, UnitCreate, UnitPatch } from "./types";
 
 const id = (value: string) => encodeURIComponent(value);
 export const FRONTEND_API_ROUTES = [
@@ -9,7 +9,7 @@ export const FRONTEND_API_ROUTES = [
   "POST /api/v1/properties/{property_id}/units", "GET /api/v1/units/{unit_id}", "PATCH /api/v1/units/{unit_id}",
   "GET /api/v1/tenants", "GET /api/v1/tenants/{tenant_id}", "POST /api/v1/tenants",
   "GET /api/v1/invoices", "GET /api/v1/invoices/{invoice_id}", "POST /api/v1/invoices",
-  "GET /api/v1/payments", "GET /api/v1/payments/{payment_id}", "GET /api/v1/payments/{payment_id}/allocations", "GET /api/v1/payments/{payment_id}/credits",
+  "GET /api/v1/payments", "GET /api/v1/payments/{payment_id}", "GET /api/v1/payments/{payment_id}/allocations", "GET /api/v1/payments/{payment_id}/credits", "POST /api/v1/payments/invoices/{invoice_id}/stk-push",
   "GET /api/v1/unassigned-payments", "POST /api/v1/unassigned-payments/{payment_id}/resolve", "GET /api/v1/ledger", "GET /api/v1/ledger/{entry_id}",
 ] as const;
 export function normalizePage<T>(raw: Page<T> | T[]): Page<T> {
@@ -27,6 +27,7 @@ export function createEndpoints(c: ApiClient) {
     unit: (uid: string) => c.get<Unit>(`/units/${id(uid)}`), patchUnit: (uid: string, body: UnitPatch) => c.patch<Unit>(`/units/${id(uid)}`, body),
     tenants: () => c.get<Tenant[]>("/tenants"), tenant: (tid: string) => c.get<Tenant>(`/tenants/${id(tid)}`), createTenant: (body: TenantCreate) => c.post<Tenant>("/tenants", body),
     invoices: () => c.get<Invoice[]>("/invoices"), invoice: (iid: string) => c.get<Invoice>(`/invoices/${id(iid)}`), createInvoice: (body: InvoiceCreate) => c.post<Invoice>("/invoices", body),
+    initiateInvoiceStkPush: (iid: string, phone_number: string) => c.post<StkPushResponse>(`/payments/invoices/${id(iid)}/stk-push`, { phone_number }),
     payments: () => c.get<Payment[]>("/payments"), payment: (pid: string) => c.get<Payment>(`/payments/${id(pid)}`),
     paymentAllocations: (pid: string) => c.get<Allocation[]>(`/payments/${id(pid)}/allocations`), paymentCredits: (pid: string) => c.get<Credit[]>(`/payments/${id(pid)}/credits`),
     unassignedPayments: () => c.get<UnassignedPayment[]>("/unassigned-payments"), resolveUnassigned: (pid: string, body: ResolveUnassigned) => c.post<Resolution>(`/unassigned-payments/${id(pid)}/resolve`, body),

@@ -40,7 +40,7 @@ describe("ResourceForm", () => {
     render(<ResourceForm specs={TENANT_CREATE_FIELDS} submitLabel="Create" onSubmit={onSubmit} />);
     await userEvent.type(screen.getByLabelText(/Full name/), "Test Tenant");
     await userEvent.type(screen.getByLabelText(/Phone/), "254712345678");
-    await userEvent.type(screen.getByLabelText(/Unit ID/), UUID);
+    await userEvent.type(screen.getByLabelText(/Unit/), UUID);
     await userEvent.type(screen.getByLabelText(/Lease start/), "2026-11-01");
     await userEvent.click(screen.getByRole("button", { name: "Create" }));
     expect(await screen.findByText("unit not found")).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("ResourceForm", () => {
     render(<ResourceForm specs={TENANT_CREATE_FIELDS} submitLabel="Create" onSubmit={onSubmit} />);
     await userEvent.type(screen.getByLabelText(/Full name/), "Test");
     await userEvent.type(screen.getByLabelText(/Phone/), "254712345678");
-    await userEvent.type(screen.getByLabelText(/Unit ID/), UUID);
+    await userEvent.type(screen.getByLabelText(/Unit/), UUID);
     await userEvent.type(screen.getByLabelText(/Lease start/), "2026-11-01");
     await userEvent.click(screen.getByRole("button", { name: "Create" }));
     expect(await screen.findByText("Phone already registered")).toBeInTheDocument();

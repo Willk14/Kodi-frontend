@@ -12,6 +12,7 @@ export function ResourceList<T extends object & { id: string }>(props: {
   title: string; description?: string; load: () => Promise<T[]>; basePath: string;
   emptyTitle: string; emptyHint?: string; create?: ReactNode;
   columns: Column<T>[]; detail?: (row: T) => ReactNode; extra?: ReactNode;
+  filterRows?: (rows: T[]) => T[];
 }) {
   const { state, reload } = useLoad(props.load, []);
   const path = usePathname() ?? props.basePath;
@@ -30,13 +31,15 @@ export function ResourceList<T extends object & { id: string }>(props: {
     {props.extra}
     <DataState state={state} onRetry={reload} isEmpty={(rows) => rows.length === 0} emptyTitle={props.emptyTitle} emptyHint={props.emptyHint}>
       {(rows) => {
-        const current = rows.find((r) => r.id === selected);
+        const visibleRows = props.filterRows?.(rows) ?? rows;
+        const current = visibleRows.find((r) => r.id === selected);
+        if (visibleRows.length === 0) return <p className="muted" role="status">No {props.title.toLowerCase()} match this property.</p>;
         return props.detail ? <div className="master-detail">
-          <div className="master-list"><DataTable rows={rows} columns={props.columns} caption={props.title} hrefFor={(row) => `${props.basePath}/${encodeURIComponent(row.id)}`} onSelect={(row) => select(row.id)} /></div>
+          <div className="master-list"><DataTable rows={visibleRows} columns={props.columns} caption={props.title} hrefFor={(row) => `${props.basePath}/${encodeURIComponent(row.id)}`} onSelect={(row) => select(row.id)} /></div>
           <aside className="detail-panel" aria-label={`${props.title} details`}>
             {current ? props.detail(current) : <p className="muted">Select a record to see its details.</p>}
           </aside>
-        </div> : <DataTable rows={rows} columns={props.columns} caption={props.title} hrefFor={(row) => `${props.basePath}/${encodeURIComponent(row.id)}`} />;
+        </div> : <DataTable rows={visibleRows} columns={props.columns} caption={props.title} hrefFor={(row) => `${props.basePath}/${encodeURIComponent(row.id)}`} />;
       }}
     </DataState>
   </>;

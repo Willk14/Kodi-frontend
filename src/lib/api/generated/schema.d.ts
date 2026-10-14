@@ -27,6 +27,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/payments/invoices/{invoice_id}/stk-push": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Initiate an STK Push for an outstanding invoice balance */
+        post: operations["initiate_invoice_stk_push_api_v1_payments_invoices__invoice_id__stk_push_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/payments": {
         parameters: {
             query?: never;
@@ -549,6 +566,18 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /**
+         * InvoiceStkPushRequest
+         * @description Phone number to prompt for an invoice's current balance.
+         */
+        InvoiceStkPushRequest: {
+            /**
+             * Phone Number
+             * @description Safaricom number in 254XXXXXXXXX format
+             * @example 254798765432
+             */
+            phone_number: string;
         };
         /**
          * ItemKV
@@ -1085,6 +1114,55 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    initiate_invoice_stk_push_api_v1_payments_invoices__invoice_id__stk_push_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoiceStkPushRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StkPushResponse"];
+                };
+            };
+            /** @description Invoice or active tenant not found in this landlord scope. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invoice has no amount due. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

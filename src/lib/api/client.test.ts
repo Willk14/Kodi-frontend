@@ -83,13 +83,15 @@ describe("api client", () => {
 });
 
 describe("endpoints", () => {
-  it("never exposes STK push and encodes path ids", async () => {
+  it("exposes invoice STK push and encodes path ids", async () => {
     const f = mockFetch(200, {});
     const { client } = make(f as unknown as typeof fetch);
     const ep = createEndpoints(client);
-    expect(Object.keys(ep).some((k) => /stk/i.test(k))).toBe(false);
+    expect(Object.keys(ep).some((k) => /stk/i.test(k))).toBe(true);
+    await ep.initiateInvoiceStkPush("invoice/1", "254700000000");
+    expect((f.mock.calls[0] as unknown as [string])[0]).toContain("/payments/invoices/invoice%2F1/stk-push");
     await ep.unit("a/b");
-    expect((f.mock.calls[0] as unknown as [string])[0]).toContain("/units/a%2Fb");
+    expect((f.mock.calls[1] as unknown as [string])[0]).toContain("/units/a%2Fb");
   });
 
   it("normalizes bare arrays and the actual ledger envelope", () => {
